@@ -16,7 +16,7 @@ class ApiRequest {
 
   createInstance() {
     this.instanceAxios = axios.create({
-      withCredentials: true,
+      // withCredentials: true, // API неправильно работает с этим флагом, пока отключу
       baseURL: this.basePath,
     });
   }
@@ -26,6 +26,8 @@ class ApiRequest {
   }
 
   createUrl(postfix) {
+    console.log('API URL:', this.basePath + postfix);
+
     return this.basePath + postfix;
   }
 
@@ -33,8 +35,8 @@ class ApiRequest {
     return this.instanceAxios.get(this.createUrl(url)).then((res) => res.data);
   }
 
-  post(url, body) {
-    return this.instanceAxios.post(this.createUrl(url), body).then((res) => res.data);
+  post(url, body, headers = {}) {
+    return this.instanceAxios.post(this.createUrl(url), body, headers).then((res) => res.data);
   }
 }
 

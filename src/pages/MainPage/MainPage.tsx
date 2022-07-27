@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux'
-import { getUser } from '@/store/actions/userActions'
+import { login } from '@/store/actions/authActions'
 
 export const MainPage = () => {
   const dispatch = useAppDispatch();
   const { user, isLoading, error } = useAppSelector(state => state.auth);
 
   useEffect(() => {
-    dispatch(getUser());
+    dispatch(login({ login: 'klad@v.ru', password: '12345678', remember: false}));
   }, [dispatch]);
 
   console.log('useAppSelector user', user);
@@ -21,10 +21,12 @@ export const MainPage = () => {
         {error ? (
           <h2>{error}</h2>
         ) : (
-          <>
-            <p>{ user.name }</p>
-            <p>{ user.username }</p>
-          </>
+          <p>
+            <p>username: { user.username }</p>
+            <p>email: { user.email }</p>
+            <p>isAdmin: { user.isAdmin ? 'Да' : 'Нет' }</p>
+            <p>isAuth: { user.isAuth ? 'Да' : 'Нет' }</p>
+          </p>
         )}
        </div>
 

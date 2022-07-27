@@ -10,10 +10,10 @@ interface UserState {
 const initialState: UserState = {
   user: {
     id: 0,
-    name: '',
     username: '',
     email: '',
-    isAuth: false
+    isAdmin: false,
+    isAuth: false,
   },
   isLoading: false,
   error: '',
@@ -32,9 +32,10 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.error = '';
       state.user.id = action.payload.id;
-      state.user.name = action.payload.name;
+      state.user.isAdmin = action.payload.isAdmin;
       state.user.username = action.payload.username;
       state.user.email = action.payload.email;
+      state.user.isAuth = true;
     },
     fetchError(state, action: PayloadAction<string>) {
       state.isLoading = false;
