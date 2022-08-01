@@ -1,7 +1,8 @@
 export interface IUser {
   id: number;
-  username: string,
   email: string;
+  username: string;
   isAdmin: false;
-  isAuth: boolean,
+  token: string;
+  tokenName: string;
 }

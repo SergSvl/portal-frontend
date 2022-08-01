@@ -5,10 +5,10 @@ export const Header = () => {
 
   return (
     <>
-      <header className="App-header">
+      <header className="App-header pb-7">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
-            COOL APP!
+            BACKEND IS
           </p>
           <a
             className="App-link"
