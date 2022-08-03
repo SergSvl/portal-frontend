@@ -1,5 +1,5 @@
 export const createFormData = (data) => {
-  console.log('data: ', data);
+  // console.log('data: ', data);
 
   let formData = new FormData();
   for (let key in data) {

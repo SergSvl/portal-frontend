@@ -5,7 +5,7 @@ import MainPage from '@/pages/MainPage';
 
 function App() {
   return (
-    <div className="App">
+    <div className="absolute h-screen _border _border-red-400 _text-center">
       <Routes>
         <Route path="/" element={ <MainPage /> } />
       </Routes>

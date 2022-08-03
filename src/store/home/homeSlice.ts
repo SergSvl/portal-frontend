@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
-import { IUser } from '@/models/IUser';
+import { IUser } from '@/types';
 
 interface HomeState {
   user: IUser;
   isAuth: boolean;
   isLoading: Boolean;
+  isOpenLoginForm: Boolean;
   error: string;
 }
 
@@ -19,6 +20,7 @@ const initialState: HomeState = {
   },
   isAuth: false,
   isLoading: false,
+  isOpenLoginForm: false,
   error: '',
 }
 
@@ -56,10 +58,16 @@ export const homeSlice = createSlice({
       state.isLoading = false;
       state.error = '';
       console.log('logout after', current(state))
-    }
+    },
+    openLoginForm(state) {
+      state.isOpenLoginForm = true;
+    },
+    closeLoginForm(state) {
+      state.isOpenLoginForm = false;
+    },
   }
 });
 
-export const { setIsAuth, unsetIsAuth, initSate, logout } = homeSlice.actions;
+export const { setIsAuth, unsetIsAuth, initSate, logout, openLoginForm, closeLoginForm } = homeSlice.actions;
 
 export default homeSlice.reducer;

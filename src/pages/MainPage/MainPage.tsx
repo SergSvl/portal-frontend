@@ -1,67 +1,136 @@
-import React, { useEffect, useState } from 'react';
-import Header from '@/components/Header';
-import { useAppSelector, useAppDispatch } from '@/hooks/redux'
-import { setIsAuth, unsetIsAuth, initSate, logout } from '@/store/home/homeSlice';
-import { useLoginMutation } from '@/store/home/homeApi';
+import React, { useEffect, useState } from "react";
+import Header from "@/components/Header";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
+import { setIsAuth, unsetIsAuth } from "@/store/home/homeSlice";
+import { closeLoginForm } from '@/store/home/homeSlice';
+import LoginForm from "@/components/Form/Login";
+import { useGetRightsMutation } from "@/store/home/homeApi";
+import HomeButton from '@/components/HomeButton/HomeButton';
+import { HomeButtonProps } from '@/types/index';
+import buttonsData from '@/pages/MainPage/ButtonsData';
 
 export const MainPage = () => {
-  const [ login, { data, isError, isLoading } ] = useLoginMutation();
+  const [getRights, { data, isError, error, status, isLoading }] = useGetRightsMutation();
   const dispatch = useAppDispatch();
-  const stateHome = useAppSelector(state => state.home);
-  const { isAuth } = stateHome;
-  const { username, email, isAdmin } = stateHome.user;
+  const stateHome = useAppSelector((state) => state.home);
+  const { isAuth, isOpenLoginForm } = stateHome;
+  // const { username, email, isAdmin } = stateHome.user;
+  const [buttons, setButtons] = useState<HomeButtonProps[]>(buttonsData);
+  const wrapperStyle = isOpenLoginForm ? "appBody w-screen h-screen bg-gray-700/70" : "appBody w-screen";
 
-  // useEffect(() => {
-  //   const response = login({ login: 'klad@v.ru', password: '12345678', remember: false, tokenName: 'portalxToken'});
-  //   response.then(response => {
-  //     if ('data' in response) {
-  //       dispatch(initSate(response.data));
-  //     }
-  //   });
-  // }, [login, dispatch]);
-
-  console.log('data', { data, isError, isLoading });
-
-  const LogIn = () => {
-    const response = login({ login: 'klad@v.ru', password: '12345678', remember: false, tokenName: 'portalxToken'});
+  const getAppConfig = () => {
+    const response = getRights();
     response.then(response => {
       if ('data' in response) {
-        dispatch(initSate(response.data));
+
+        console.log('getAppConfig:', { data, isError, error, status, isLoading });
+        console.log('getAppConfig:', response.data);
+
+        const configRights = response.data.get;
+
+        /*
+          Нужно получить такую структуру прав:
+
+          rights: {
+            task1: [
+              rights: {
+                id1: [
+                  'klad1@v.ru',
+                  ...
+                ],
+                id2: [
+                  'klad2@v.ru',
+                  ...
+                ],
+              }
+            ]
+
+            task2: [
+              rights: {
+                id1: [
+                  'klad1@v.ru',
+                  ...
+                ],
+                id2: [
+                  'klad2@v.ru',
+                  ...
+                ],
+              }
+            ]
+          }
+        */
+
+        const fullConfig: { rights: {} } = {
+          rights: {}
+        }
+
+        console.log('loadConfig > fullConfig.rights 1: ', fullConfig.rights)
+
+        // configRights.forEach(elem => {
+        const allRights = configRights.map((el: any) => {
+
+          const rights: [] = JSON.parse(el.rights);
+          console.log('forEach > rights: ', rights)
+          // console.log('forEach > length: ', rights.length)
+          const rightsArray = []
+
+          // console.log('>> loadConfig > configRights.forEach > rights: ', rights)
+
+          // const currRight = rights.map((el: any) => {
+          //   // el.users ? 
+          //   rightsArray[el.id] = [...el.users];
+          // })
+
+          // fullConfig.rights[el.task] = {
+          //   rights: [...rightsArray]
+          // })
+          return '';
+        });
+
+        console.log('loadConfig > fullConfig.rights 2: ', fullConfig.rights)
       }
     });
+  }
+
+  const handlerOuterFormClick = (event: React.MouseEvent<HTMLElement, any>) => {
+    const { target } = event;
+    if (target instanceof HTMLElement) {
+      if (target.className.indexOf('appBody') !== -1) {
+        dispatch(closeLoginForm());
+        event.stopPropagation();  
+      }
+    }
   }
 
   return (
     <>
       <Header />
-      <div className='m-4 p-4 border border-indigo-600 text-xl font-medium text-black'>
-        {isLoading ? (
-           <h2>Loading...</h2>
-        ) : isError ? (
-            <h2>Ошибка загрузки</h2>
-          ) : (
-            <p>
-              <p>username: { username }</p>
-              <p>email: { email }</p>
-              <p>isAdmin: { isAdmin ? 'Да' : 'Нет' }</p>
-              <p>isAuth: { isAuth ? 'Да' : 'Нет' }</p>
-            </p>
-          )
-        }
-       </div>
 
-      {(isAuth || email) && (
-        <>
-          <button className='bg-sky-500/100 rounded-md p-4 m-4' onClick={() => dispatch(setIsAuth())}>Изменить Auth = true</button>
-          <button className='bg-sky-500/100 rounded-md p-4 m-4' onClick={() => dispatch(unsetIsAuth())}>Изменить Auth = false</button>
-        </>
-      )}
-
-      {(isAuth || email) ? (
-        <button className='bg-sky-500/100 rounded-md p-4 m-4' onClick={() => dispatch(logout())}>Выйти</button>
-      ) : (
-        <button className='bg-sky-500/100 rounded-md p-4 m-4' onClick={LogIn}>Войти</button>
-      )}
+      <div className={wrapperStyle} onClick={handlerOuterFormClick}>
+        {isOpenLoginForm ? (
+          <LoginForm />
+          // <button
+          //   className='bg-sky-500/100 rounded-md p-4 m-4 h-12'
+          //   onClick={getAppConfig}
+          // >
+          //   Получить конфиг
+          // </button>
+        ) : (
+          <div className='container flex -justify-around flex-wrap mx-auto [height:calc(100vh-4.45em)] mt-[4.45em] py-2 border border-green-600 w-full text-lg font-medium text-black'>
+            {isAuth ? (
+              buttons.length ? (
+                buttons.map((btn) => (
+                  btn.isActive && <HomeButton key={btn.title} data={btn} />
+                ))
+              ) : (
+                <div className='text-xl mx-auto'>Нет данных</div>
+              )
+            ) : (
+              <div className='text-xl mx-auto'>Вы не авторизованы</div>
+            )}
+          </div>
+        )}
+      </div>
     </>
-  )
-}
+  );
+};
