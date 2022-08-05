@@ -5,6 +5,7 @@ export interface IUser {
   isAdmin: false;
   token: string;
   tokenName: string;
+  password: string;
 }
 
 export interface ILogin {
@@ -15,9 +16,9 @@ export interface ILogin {
 }
 
 export interface IConfigRequestData {
-  tableName: string;
   tokenName: string;
-  where: any;
+  tableName?: string;
+  where?: any;
 }
 
 export interface IConfigResponseData {
@@ -26,13 +27,12 @@ export interface IConfigResponseData {
 }
 
 export interface HomeButtonProps {
-  // data: {
-    title: string;
-    image: string;
-    link: string;
-    url: string;
-    isActive: boolean;
-  // }
+  title: string;
+  image: string;
+  link: string;
+  get: string;
+  post: string;
+  isActive: boolean;
 }
 
 export interface ApiError {

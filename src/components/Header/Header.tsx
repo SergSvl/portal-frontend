@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '@/assets/icons/logo.svg';
 import Button from '@/components/Button/Button';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { openLoginForm, closeLoginForm } from '@/store/home/homeSlice';
 import { logout } from '@/store/home/homeSlice';
+import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
+import { getLSData } from '@/utils/helpers/local-storage-helpers';
 
 export const Header = () => {
   const stateHome = useAppSelector(state => state.home);
-  const { isAuth } = stateHome;
+  const { isAuth: isAuthState } = stateHome;
+  // const { email, isAdmin } = stateHome.user;
+  const isAuthLS = getLSData(LOCAL_STORAGE_KEYS.isAuth);
+  const [isAuth, setIsAuth] = useState(isAuthState || isAuthLS);
+  // const [isAuth, setIsAuth] = useState((isAuthState || isAuthLS) && email);
   const { isOpenLoginForm } = stateHome;
   const dispatch = useAppDispatch();
 
@@ -17,6 +23,10 @@ export const Header = () => {
       : dispatch(openLoginForm());
     event.stopPropagation();
   }
+
+  useEffect(() => {
+    setIsAuth(isAuthState || isAuthLS);
+  }, [isAuthState, isAuthLS]);
 
   return (
     <>

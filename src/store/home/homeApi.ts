@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { IUser, ILogin, IConfigResponseData, IConfigRequestData } from '@/types';
 import { createFormData } from '@/utils/helpers/form-data';
-import { getLSData, setLSData } from '@/utils/helpers/local-storage-helpers';
+import { setLSData, getLSData } from '@/utils/helpers/local-storage-helpers';
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
 
 export const homeApi = createApi({
@@ -23,6 +23,7 @@ export const homeApi = createApi({
       },
       transformResponse: (response: any) => {
         setLSData(LOCAL_STORAGE_KEYS.token, response.data.token);
+        setLSData(LOCAL_STORAGE_KEYS.isAuth, true);
         return response.data;
       }
     }),
@@ -43,6 +44,23 @@ export const homeApi = createApi({
           method: 'GET',
           headers: header,
           params: configRequestData,
+        }
+      },
+      transformResponse: (response: any) => {
+        return response.data;
+      }
+    }),
+
+    getUser: build.mutation<IUser, void>({
+      query: () => {
+        const header: { Authorization: string; } = {
+          Authorization: getLSData(LOCAL_STORAGE_KEYS.token)
+        };
+
+        return {
+          url: 'user',
+          method: 'GET',
+          headers: header,
         }
       },
       transformResponse: (response: any) => {
@@ -84,4 +102,4 @@ table config: {
     const fullConfig = JSON.parse(respConfigOther.result.get[0].global_config)
     const configRights = respConfigRights.result.get*/
 
-export const { useLoginMutation, useGetRightsMutation } = homeApi;
+export const { useLoginMutation, useGetRightsMutation, useGetUserMutation } = homeApi;

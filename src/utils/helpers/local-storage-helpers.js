@@ -9,3 +9,5 @@ export const getLSData = (key) => {
 };
 
 export const setLSData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+export const deleteLSData = (key) => localStorage.removeItem(key);

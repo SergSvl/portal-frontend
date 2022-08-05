@@ -3,19 +3,23 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LoginForm from "@/components/Form/Login";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { setIsAuth, unsetIsAuth } from "@/store/home/homeSlice";
-import { closeLoginForm } from '@/store/home/homeSlice';
-import { useGetRightsMutation } from "@/store/home/homeApi";
+import { closeLoginForm, initSate } from '@/store/home/homeSlice';
+import { useGetUserMutation, useGetRightsMutation } from "@/store/home/homeApi";
 import HomeButton from '@/components/HomeButton/HomeButton';
 import { HomeButtonProps } from '@/types/index';
 import buttonsData from '@/pages/MainPage/ButtonsData';
+import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
+import { getLSData } from '@/utils/helpers/local-storage-helpers';
 
 export const MainPage = () => {
   const [getRights, { data, isError, error, status, isLoading }] = useGetRightsMutation();
+  const [getUser] = useGetUserMutation();
+  // const [getUser, { data: userData, isError: isUserError, error: userError, status: userStatus, isLoading: isUserLoading }] = useGetUserMutation();
   const dispatch = useAppDispatch();
   const stateHome = useAppSelector((state) => state.home);
-  const { isAuth, isOpenLoginForm } = stateHome;
-  // const { username, email, isAdmin } = stateHome.user;
+  const { isAuth: isAuthState, isOpenLoginForm } = stateHome;
+  const isAuthLS = getLSData(LOCAL_STORAGE_KEYS.isAuth);
+  const [isAuth, setIsAuth] = useState(isAuthState || isAuthLS);
   const [buttons, setButtons] = useState<HomeButtonProps[]>(buttonsData);
   const wrapperStyle = isOpenLoginForm ? "appBody h-screen bg-gray-700/60" : "appBody";
   const buttonsContent = 'container mx-auto [min-height:calc(100vh-7.5rem)] mt-[5rem] py-2 _border _border-green-600 w-full text-lg font-medium text-black';
@@ -23,6 +27,7 @@ export const MainPage = () => {
 
   const getAppConfig = () => {
     const response = getRights();
+
     response.then(response => {
       if ('data' in response) {
 
@@ -104,6 +109,27 @@ export const MainPage = () => {
       }
     }
   }
+
+  useEffect(() => {
+    setIsAuth(isAuthState || isAuthLS);
+  }, [isAuthState, isAuthLS]);
+
+  useEffect(() => {
+    const initialization = () => {
+      const response = getUser();
+  
+      response.then(response => {
+        // console.log('initialization response:', response);
+  
+        if ('data' in response) {
+          // console.log('initialization:', { userData, isUserError, userError, userStatus, isUserLoading });
+          dispatch(initSate({...response.data}));
+        }
+      });
+    }
+    initialization();
+    // getAppConfig();
+  }, [dispatch, getUser]);
 
   return (
     <>

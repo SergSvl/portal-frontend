@@ -18,10 +18,14 @@ const Login = () => {
   const formStyle = 'flex flex-col rounded-md max-w-72 w-64 sm:w-80 h-80 border bg-white border-grey-600 p-5 absolute m-auto top-0 left-0 right-0 bottom-0 z-20';
 
   const LogIn = () => {
-    const response = login({ login: 'klad@v.ru', password: '12345678', remember: false, tokenName: 'portalxToken'});
+    // console.log("LogIn data:", { email, password });
+    const response = login({ login: email, password, remember: false, tokenName: 'portalxToken'});
+    // const response = login({ login: 'klad@v.ru', password: '12345678', remember: false, tokenName: 'portalxToken'});
     response.then(response => {
       if ('data' in response) {
-        dispatch(initSate(response.data));
+        // const payload = {...response.data, password};
+        // console.log("response.data:", payload);
+        dispatch(initSate({...response.data, password}));
         dispatch(closeLoginForm());
       }
     });

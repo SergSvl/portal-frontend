@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 import { IUser } from '@/types';
+import { deleteLSData } from '@/utils/helpers/local-storage-helpers';
+import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
 
 interface HomeState {
   user: IUser;
@@ -16,7 +18,8 @@ const initialState: HomeState = {
     username: '',
     isAdmin: false,
     token: '',
-    tokenName: ''
+    tokenName: '',
+    password: '',
   },
   isAuth: false,
   isLoading: false,
@@ -36,16 +39,16 @@ export const homeSlice = createSlice({
       state.error = '';
       console.log('initSate after', current(state))
     },
-    setIsAuth(state) {
-      console.log('setIsAuth before', current(state))
-      state.isAuth = true;
-      console.log('setIsAuth after', current(state))
-    },
-    unsetIsAuth(state) {
-      console.log('unsetIsAuth before', current(state))
-      state.isAuth = false;
-      console.log('unsetIsAuth after', current(state))
-    },
+    // setIsAuth(state) {
+    //   console.log('setIsAuth before', current(state))
+    //   state.isAuth = true;
+    //   console.log('setIsAuth after', current(state))
+    // },
+    // unsetIsAuth(state) {
+    //   console.log('unsetIsAuth before', current(state))
+    //   state.isAuth = false;
+    //   console.log('unsetIsAuth after', current(state))
+    // },
     logout(state) {
       console.log('logout before', current(state))
       state.user.id = 0;
@@ -54,9 +57,12 @@ export const homeSlice = createSlice({
       state.user.isAdmin = false;
       state.user.token = '';
       state.user.tokenName = '';
+      state.user.password = '';
       state.isAuth = false;
       state.isLoading = false;
       state.error = '';
+      deleteLSData(LOCAL_STORAGE_KEYS.token);
+      deleteLSData(LOCAL_STORAGE_KEYS.isAuth);
       console.log('logout after', current(state))
     },
     openLoginForm(state) {
@@ -68,6 +74,6 @@ export const homeSlice = createSlice({
   }
 });
 
-export const { setIsAuth, unsetIsAuth, initSate, logout, openLoginForm, closeLoginForm } = homeSlice.actions;
+export const { initSate, logout, openLoginForm, closeLoginForm } = homeSlice.actions;
 
 export default homeSlice.reducer;
