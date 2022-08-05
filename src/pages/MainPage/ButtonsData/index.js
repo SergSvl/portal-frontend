@@ -21,7 +21,7 @@ const buttonsData = [
     image: tabel,
     link: '',
     url: '',
-    isActive: false
+    isActive: true
   },
   {
     title: 'Архив РКД',

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import LoginForm from "@/components/Form/Login";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setIsAuth, unsetIsAuth } from "@/store/home/homeSlice";
 import { closeLoginForm } from '@/store/home/homeSlice';
-import LoginForm from "@/components/Form/Login";
 import { useGetRightsMutation } from "@/store/home/homeApi";
 import HomeButton from '@/components/HomeButton/HomeButton';
 import { HomeButtonProps } from '@/types/index';
@@ -16,7 +17,9 @@ export const MainPage = () => {
   const { isAuth, isOpenLoginForm } = stateHome;
   // const { username, email, isAdmin } = stateHome.user;
   const [buttons, setButtons] = useState<HomeButtonProps[]>(buttonsData);
-  const wrapperStyle = isOpenLoginForm ? "appBody w-screen h-screen bg-gray-700/70" : "appBody w-screen";
+  const wrapperStyle = isOpenLoginForm ? "appBody h-screen bg-gray-700/60" : "appBody";
+  const buttonsContent = 'container mx-auto [min-height:calc(100vh-7.5rem)] mt-[5rem] py-2 _border _border-green-600 w-full text-lg font-medium text-black';
+  const buttonsWrapper = 'flex flex-wrap justify-center lg:justify-between 2xl:justify-start';
 
   const getAppConfig = () => {
     const response = getRights();
@@ -116,19 +119,24 @@ export const MainPage = () => {
           //   Получить конфиг
           // </button>
         ) : (
-          <div className='container flex -justify-around flex-wrap mx-auto [height:calc(100vh-4.45em)] mt-[4.45em] py-2 border border-green-600 w-full text-lg font-medium text-black'>
-            {isAuth ? (
-              buttons.length ? (
-                buttons.map((btn) => (
-                  btn.isActive && <HomeButton key={btn.title} data={btn} />
-                ))
-              ) : (
-                <div className='text-xl mx-auto'>Нет данных</div>
-              )
-            ) : (
-              <div className='text-xl mx-auto'>Вы не авторизованы</div>
-            )}
-          </div>
+          <>
+            <div className={buttonsContent}>
+              <div className={buttonsWrapper}>
+                {isAuth ? (
+                  buttons.length ? (
+                    buttons.map((btn) => (
+                      btn.isActive && <HomeButton key={btn.title} data={btn} />
+                    ))
+                  ) : (
+                    <div className='text-xl mx-auto'>Нет данных</div>
+                  )
+                ) : (
+                  <div className='text-xl mx-auto'>Вы не авторизованы</div>
+                )}
+              </div>
+            </div>
+            <Footer />
+          </>
         )}
       </div>
     </>

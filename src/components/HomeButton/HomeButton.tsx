@@ -10,7 +10,7 @@ const HomeButton = ({ data }: { data: HomeButtonProps }) => {
   const imageStyle = 'rounded-md border border-black';
   
   return (
-    <div className='border p-4 m-4 mx-2 h-64 w-72 text-center bg-sky-600'>
+    <div className='border p-4 m-4 mx-2 h-64 w-80 xl:w-72 text-center bg-sky-600'>
       {link ? (
         <Link to={link}>
           <div className={titleStyle}>{title}</div>

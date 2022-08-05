@@ -26,10 +26,10 @@ export const Header = () => {
         <div className='container m-auto pt-2 md:p-2 -border-l -border-r border-white flex justify-between items-center'>
           <div className='flex justify-between items-center'>
             <img src={logo} className='h-16 ml-2 mr-4' alt='logo' />
-            <span className='font-["MonAmourOne"] text-white text-2xl md:text-3xl md:pb-4 duration-200'>Филиал &laquo;Балтийский&nbsp;Алмаз&raquo;</span>
+            <span className='font-["MonAmourOne"] text-white text-xl sm:text-2xl mb-2 md:mb-0 md:text-3xl md:pb-4 duration-200'>Филиал &laquo;Балтийский&nbsp;Алмаз&raquo;</span>
           </div>
           {!isOpenLoginForm &&
-            <Button text={isAuth ? 'Выйти' : 'Войти'} handler={handlerBtnClick}></Button>
+            <Button styles='w-24 mr-2' text={isAuth ? 'Выйти' : 'Войти'} handler={handlerBtnClick}></Button>
           }
         </div>
       </header>

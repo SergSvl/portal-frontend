@@ -34,3 +34,7 @@ export interface HomeButtonProps {
     isActive: boolean;
   // }
 }
+
+export interface ApiError {
+  error: any;
+}
