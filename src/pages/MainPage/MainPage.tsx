@@ -3,167 +3,177 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LoginForm from "@/components/Form/Login";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { closeLoginForm, initSate } from '@/store/home/homeSlice';
+import { closeLoginForm, initSate } from "@/store/home/homeSlice";
 import { useGetUserMutation, useGetRightsMutation } from "@/store/home/homeApi";
-import HomeButton from '@/components/HomeButton/HomeButton';
-import { HomeButtonProps } from '@/types/index';
-import buttonsData from '@/pages/MainPage/ButtonsData';
+import HomeButton from "@/components/HomeButton/HomeButton";
+import { IHomeButtonProps } from "@/types/index";
+import buttonsData, { taskNames } from "@/pages/MainPage/ButtonsData";
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
-import { getLSData } from '@/utils/helpers/local-storage-helpers';
+import { getLSData } from "@/utils/helpers/local-storage-helpers";
+import { logout } from '@/store/home/homeSlice';
 
 export const MainPage = () => {
-  const [getRights, { data, isError, error, status, isLoading }] = useGetRightsMutation();
+  const [getRights] = useGetRightsMutation();
   const [getUser] = useGetUserMutation();
-  // const [getUser, { data: userData, isError: isUserError, error: userError, status: userStatus, isLoading: isUserLoading }] = useGetUserMutation();
+  // const [getUser, { data, isError, error, status, isLoading }] = useGetUserMutation();
   const dispatch = useAppDispatch();
   const stateHome = useAppSelector((state) => state.home);
   const { isAuth: isAuthState, isOpenLoginForm } = stateHome;
+  const { email } = stateHome.user;
   const isAuthLS = getLSData(LOCAL_STORAGE_KEYS.isAuth);
   const [isAuth, setIsAuth] = useState(isAuthState || isAuthLS);
-  const [buttons, setButtons] = useState<HomeButtonProps[]>(buttonsData);
-  const wrapperStyle = isOpenLoginForm ? "appBody h-screen bg-gray-700/60" : "appBody";
-  const buttonsContent = 'container mx-auto [min-height:calc(100vh-7.5rem)] mt-[5rem] py-2 _border _border-green-600 w-full text-lg font-medium text-black';
-  const buttonsWrapper = 'flex flex-wrap justify-center lg:justify-between 2xl:justify-start';
+  const [allRights, setAllRights] = useState<IAllRights[]>([]);
+  const [buttons, setButtons] = useState<IHomeButtonProps[]>(buttonsData);
+  const overlay = isOpenLoginForm
+    ? "overlay top-[5.0rem] bottom-0 left-0 right-0 absolute bg-gray-700/60 z-20"
+    : "overlay";
+  const buttonsContent =
+    "container mx-auto [min-height:calc(100vh-7.5rem)] mt-[5rem] py-2 _border _border-green-600 w-full text-lg font-medium text-black";
+  const buttonsWrapper =
+    "flex flex-wrap justify-center lg:justify-between 2xl:justify-start";
 
-  const getAppConfig = () => {
-    const response = getRights();
+  interface IAllRights {
+    [key: string]: any;
+  }
 
-    response.then(response => {
-      if ('data' in response) {
+  interface IRight {
+    id: string;
+    right: string;
+    users: [];
+  }
 
-        console.log('getAppConfig:', { data, isError, error, status, isLoading });
-        console.log('getAppConfig:', response.data);
-
-        const configRights = response.data.get;
-
-        /*
-          Нужно получить такую структуру прав:
-
-          rights: {
-            task1: [
-              rights: {
-                id1: [
-                  'klad1@v.ru',
-                  ...
-                ],
-                id2: [
-                  'klad2@v.ru',
-                  ...
-                ],
-              }
-            ]
-
-            task2: [
-              rights: {
-                id1: [
-                  'klad1@v.ru',
-                  ...
-                ],
-                id2: [
-                  'klad2@v.ru',
-                  ...
-                ],
-              }
-            ]
-          }
-        */
-
-        const fullConfig: { rights: {} } = {
-          rights: {}
-        }
-
-        console.log('loadConfig > fullConfig.rights 1: ', fullConfig.rights)
-
-        // configRights.forEach(elem => {
-        const allRights = configRights.map((el: any) => {
-
-          const rights: [] = JSON.parse(el.rights);
-          console.log('forEach > rights: ', rights)
-          // console.log('forEach > length: ', rights.length)
-          const rightsArray = []
-
-          // console.log('>> loadConfig > configRights.forEach > rights: ', rights)
-
-          // const currRight = rights.map((el: any) => {
-          //   // el.users ? 
-          //   rightsArray[el.id] = [...el.users];
-          // })
-
-          // fullConfig.rights[el.task] = {
-          //   rights: [...rightsArray]
-          // })
-          return '';
-        });
-
-        console.log('loadConfig > fullConfig.rights 2: ', fullConfig.rights)
-      }
-    });
+  interface ITask {
+    id: string;
+    task: string;
+    description: string;
+    rights: string;
   }
 
   const handlerOuterFormClick = (event: React.MouseEvent<HTMLElement, any>) => {
     const { target } = event;
     if (target instanceof HTMLElement) {
-      if (target.className.indexOf('appBody') !== -1) {
+      if (target.className.indexOf("overlay") !== -1) {
         dispatch(closeLoginForm());
-        event.stopPropagation();  
+        event.stopPropagation();
       }
     }
-  }
+  };
 
   useEffect(() => {
     setIsAuth(isAuthState || isAuthLS);
   }, [isAuthState, isAuthLS]);
 
   useEffect(() => {
-    const initialization = () => {
+    const initialization = async () => {
       const response = getUser();
-  
-      response.then(response => {
-        // console.log('initialization response:', response);
-  
-        if ('data' in response) {
-          // console.log('initialization:', { userData, isUserError, userError, userStatus, isUserLoading });
-          dispatch(initSate({...response.data}));
+
+      // console.log('initialization:', { data, isError, error, status, isLoading, endpointName, reset, requestId, originalArgs });
+      
+      // console.log('response:', response);
+
+      response.then((response: any) => {
+        console.log('initialization response:', response);
+
+        if ("error" in response) {
+          console.log('response.error:', response.error);
+          if (response.error.status === 401) {
+            dispatch(logout());
+          }
+        }
+
+        if ("data" in response) {
+          dispatch(initSate({ ...response.data }));
         }
       });
-    }
+    };
+
+    const getAppConfig = () => {
+      const response = getRights();
+      const sumRights: IAllRights | any = [];
+
+      response.then((response) => {
+        if ("data" in response) {
+          const configRights = response.data.get;
+          // console.log('getAppConfig:', configRights);
+          // console.log('taskNames:', taskNames);
+          // console.log('buttons:', buttons);
+
+          configRights.map((task: ITask): IAllRights => {
+            // 1. Удаляем все задачи, прилетевшие с бэка, и которых нет в списке на фронте
+            if (taskNames.indexOf(task.task) !== -1) {
+              const rights: [] = JSON.parse(task.rights);
+              // console.log('> rights: ', rights);
+
+              let rightsFlat = [""];
+              // 2. Исключаем из списка те задачи с бэка, у которых нет заполненного массива прав
+              if (Array.isArray(rights)) {
+                rightsFlat = rights.reduce(
+                  (acc: string[] | any, right: IRight) => {
+                    return right.users && right.users.length
+                      ? acc.concat(right.users)
+                      : false;
+                  },
+                  []
+                );
+
+                // console.log('> rightsFlat: ', rightsFlat);
+                if (rightsFlat) sumRights[task.task] = rightsFlat;
+              }
+            }
+            return sumRights;
+          });
+
+          // console.log('sumRights >: ', sumRights);
+          setAllRights(sumRights);
+          // console.log('allRights >: ', allRights);
+        }
+      });
+    };
+
     initialization();
-    // getAppConfig();
-  }, [dispatch, getUser]);
+    getAppConfig();
+  }, [dispatch, getUser, getRights, setAllRights]);
 
   return (
     <>
       <Header />
-
-      <div className={wrapperStyle} onClick={handlerOuterFormClick}>
-        {isOpenLoginForm ? (
-          <LoginForm />
-          // <button
-          //   className='bg-sky-500/100 rounded-md p-4 m-4 h-12'
-          //   onClick={getAppConfig}
-          // >
-          //   Получить конфиг
-          // </button>
-        ) : (
+      <div className=''>
+        {isOpenLoginForm && (
           <>
-            <div className={buttonsContent}>
-              <div className={buttonsWrapper}>
-                {isAuth ? (
-                  buttons.length ? (
-                    buttons.map((btn) => (
-                      btn.isActive && <HomeButton key={btn.title} data={btn} />
-                    ))
-                  ) : (
-                    <div className='text-xl mx-auto'>Нет данных</div>
-                  )
-                ) : (
-                  <div className='text-xl mx-auto'>Вы не авторизованы</div>
-                )}
-              </div>
-            </div>
-            <Footer />
+            <div className={overlay} onClick={handlerOuterFormClick}></div>
+            <LoginForm />
           </>
         )}
+        <div className={buttonsContent}>
+          <div className={buttonsWrapper}>
+            {isAuth ? (
+              buttons.length ? (
+                buttons.map(
+                  (btn: IHomeButtonProps) =>
+                    btn.isActive &&
+                    (btn.public 
+                      || (allRights[btn.id as unknown as number] !== undefined
+                      && allRights[btn.id as unknown as number].indexOf(email) !== -1)
+                    ) && (
+                      <HomeButton key={btn.title} data={btn} />
+                    )
+                )
+              ) : (
+                <div className='text-xl mx-auto'>Нет данных</div>
+              )
+            ) : (
+              buttons.length && (
+                buttons.map(
+                  (btn) =>
+                    btn.isActive && btn.public && (
+                      <HomeButton key={btn.title} data={btn} />
+                    )
+                )
+              )
+            )}
+          </div>
+        </div>
+        <Footer />
       </div>
     </>
   );

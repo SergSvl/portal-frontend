@@ -32,12 +32,12 @@ export const homeSlice = createSlice({
   initialState,
   reducers: {
     initSate(state, action: PayloadAction<IUser>) {
-      console.log('initSate before', current(state))
+      // console.log('initSate before', current(state))
       state.user = action.payload;
       state.isAuth = true;
       state.isLoading = false;
       state.error = '';
-      console.log('initSate after', current(state))
+      // console.log('initSate after', current(state))
     },
     // setIsAuth(state) {
     //   console.log('setIsAuth before', current(state))

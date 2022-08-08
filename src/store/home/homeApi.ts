@@ -63,43 +63,34 @@ export const homeApi = createApi({
           headers: header,
         }
       },
-      transformResponse: (response: any) => {
-        return response.data;
-      }
+      transformResponse: (response: any) => response.data,
+      
+      // invalidatesTags: (result, error, id) => {
+      //   console.log('invalidatesTags:', { result, error, id });
+      //   return [{ type: 'Posts', id }];
+      // },
+      // async onQueryStarted(
+      //   arg,
+      //   { dispatch, getState, queryFulfilled, requestId, extra, getCacheEntry }
+      // ) {
+      //   console.log('onQueryStarted:', { queryFulfilled, requestId, extra });
+      // },
+      // async onCacheEntryAdded(
+      //   arg,
+      //   {
+      //     dispatch,
+      //     getState,
+      //     extra,
+      //     requestId,
+      //     cacheEntryRemoved,
+      //     cacheDataLoaded,
+      //     getCacheEntry,
+      //   }
+      // ) {
+      //   console.log('onCacheEntryAdded:', { getState, requestId, extra, cacheDataLoaded });
+      // },
     }),
   })
 });
-
-/*
-table config: {
-  "subdomain":"portal.baltalm.ru",
-  "baseUrl":["portal.baltalm.ru"],
-  "orderList":["021-02708","007-01912","05708","12345"],
-  "telegram":[{
-    "telegram_token":"1269523575:AAFQCaWbvkp2TXdeDiY-LEDqFWXZtGhsF-0","telegram_chat_id":"-1001421968910"
-  }],
-  "telegramLinks":[
-    "t.me","t-do.ru","t.elegram.ru","teleg.run","tele.click","tg.telepult.pro"
-  ]}
-
-    const reqConfigOther = {
-      tableName: 'config', // обязательный параметр
-      tokenName: '',
-      where: '{}',
-    }
-    const reqConfigRights = { ...reqConfigOther }
-    reqConfigRights.tableName = 'tasks'
-
-    // console.log('>> Library loadConfig > getConfigOther: ', reqConfigOther)
-    // console.log('>> Library loadConfig > getConfigRights: ', reqConfigRights)
-
-    // console.log('>> Library loadConfig > store.getters.baseUrlApi = ', store.getters.baseUrlApi)
-    
-    const respConfigOther = await read(reqConfigOther)
-    // console.log('>> Library loadConfig > respConfigOther: ', respConfigOther)
-    const respConfigRights = await read(reqConfigRights)
-    // console.log('>> Library loadConfig > respConfigRights: ', respConfigRights)
-    const fullConfig = JSON.parse(respConfigOther.result.get[0].global_config)
-    const configRights = respConfigRights.result.get*/
 
 export const { useLoginMutation, useGetRightsMutation, useGetUserMutation } = homeApi;
