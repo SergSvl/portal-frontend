@@ -11,10 +11,11 @@ import buttonsData, { taskNames } from "@/pages/MainPage/ButtonsData";
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
 import { getLSData } from "@/utils/helpers/local-storage-helpers";
 import { logout } from '@/store/home/homeSlice';
+import Loading from "@/components/Loading/Loading";
 
 export const MainPage = () => {
   const [getRights] = useGetRightsMutation();
-  const [getUser] = useGetUserMutation();
+  const [getUser, { isLoading }] = useGetUserMutation();
   // const [getUser, { data, isError, error, status, isLoading }] = useGetUserMutation();
   const dispatch = useAppDispatch();
   const stateHome = useAppSelector((state) => state.home);
@@ -146,7 +147,7 @@ export const MainPage = () => {
         )}
         <div className={buttonsContent}>
           <div className={buttonsWrapper}>
-            {isAuth ? (
+            {isAuth && !isLoading ? (
               buttons.length ? (
                 buttons.map(
                   (btn: IHomeButtonProps) =>
@@ -162,14 +163,7 @@ export const MainPage = () => {
                 <div className='text-xl mx-auto'>Нет данных</div>
               )
             ) : (
-              buttons.length && (
-                buttons.map(
-                  (btn) =>
-                    btn.isActive && btn.public && (
-                      <HomeButton key={btn.title} data={btn} />
-                    )
-                )
-              )
+              <Loading />
             )}
           </div>
         </div>
