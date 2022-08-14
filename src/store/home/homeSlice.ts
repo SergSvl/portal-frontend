@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 import { IUser } from '@/types';
-import { deleteLSData } from '@/utils/helpers/local-storage-helpers';
+import { setLSData, deleteLSData } from '@/utils/helpers/local-storage-helpers';
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
 
 interface HomeState {
@@ -37,18 +37,9 @@ export const homeSlice = createSlice({
       state.isAuth = true;
       state.isLoading = false;
       state.error = '';
+      setLSData(LOCAL_STORAGE_KEYS.user, action.payload);
       // console.log('initSate after', current(state))
     },
-    // setIsAuth(state) {
-    //   console.log('setIsAuth before', current(state))
-    //   state.isAuth = true;
-    //   console.log('setIsAuth after', current(state))
-    // },
-    // unsetIsAuth(state) {
-    //   console.log('unsetIsAuth before', current(state))
-    //   state.isAuth = false;
-    //   console.log('unsetIsAuth after', current(state))
-    // },
     logout(state) {
       console.log('logout before', current(state))
       state.user.id = 0;
@@ -63,6 +54,7 @@ export const homeSlice = createSlice({
       state.error = '';
       deleteLSData(LOCAL_STORAGE_KEYS.token);
       deleteLSData(LOCAL_STORAGE_KEYS.isAuth);
+      deleteLSData(LOCAL_STORAGE_KEYS.user);
       console.log('logout after', current(state))
     },
     openLoginForm(state) {

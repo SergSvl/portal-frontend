@@ -1,4 +1,6 @@
 export const LOCAL_STORAGE_KEYS = {
   token: 'portalxToken',
-  isAuth: false
+  isAuth: false,
+  rights: 'rights',
+  user: 'user',
 }

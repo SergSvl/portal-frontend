@@ -40,3 +40,28 @@ export interface IHomeButtonProps {
 export interface IApiError {
   error: any;
 }
+
+export interface IRightsResponse {
+  data: {
+    get: [];
+    method: string;
+  }
+  status: boolean;
+}
+
+export interface IAllRights {
+  [key: string]: any;
+}
+
+export interface IRight {
+  id: string;
+  right: string;
+  users: [];
+}
+
+export interface ITask {
+  id: string;
+  task: string;
+  description: string;
+  rights: string;
+}

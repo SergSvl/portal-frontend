@@ -6,16 +6,16 @@ import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { closeLoginForm, initSate } from "@/store/home/homeSlice";
 import { useGetUserMutation, useGetRightsMutation } from "@/store/home/homeApi";
 import HomeButton from "@/components/HomeButton/HomeButton";
-import { IHomeButtonProps } from "@/types/index";
+import { IHomeButtonProps, IUser, IAllRights, IRight, ITask } from "@/types";
 import buttonsData, { taskNames } from "@/pages/MainPage/ButtonsData";
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";
-import { getLSData } from "@/utils/helpers/local-storage-helpers";
+import { setLSData, getLSData } from "@/utils/helpers/local-storage-helpers";
 import { logout } from '@/store/home/homeSlice';
 import Loading from "@/components/Loading/Loading";
 
 export const MainPage = () => {
-  const [getRights] = useGetRightsMutation();
-  const [getUser, { isLoading }] = useGetUserMutation();
+  const [getRights, { isLoading: isLoadingRights }] = useGetRightsMutation();
+  const [getUser, { isLoading: isLoadingUser }] = useGetUserMutation();
   // const [getUser, { data, isError, error, status, isLoading }] = useGetUserMutation();
   const dispatch = useAppDispatch();
   const stateHome = useAppSelector((state) => state.home);
@@ -33,23 +33,6 @@ export const MainPage = () => {
   const buttonsWrapper =
     "flex flex-wrap justify-center lg:justify-between 2xl:justify-start";
 
-  interface IAllRights {
-    [key: string]: any;
-  }
-
-  interface IRight {
-    id: string;
-    right: string;
-    users: [];
-  }
-
-  interface ITask {
-    id: string;
-    task: string;
-    description: string;
-    rights: string;
-  }
-
   const handlerOuterFormClick = (event: React.MouseEvent<HTMLElement, any>) => {
     const { target } = event;
     if (target instanceof HTMLElement) {
@@ -66,69 +49,99 @@ export const MainPage = () => {
 
   useEffect(() => {
     const initialization = async () => {
-      const response = getUser();
+      const userData = getLSData(LOCAL_STORAGE_KEYS.user);
+      // console.log('initialization userData:', userData);
 
-      // console.log('initialization:', { data, isError, error, status, isLoading, endpointName, reset, requestId, originalArgs });
-      
-      // console.log('response:', response);
+      if (typeof userData === 'object' && userData !== null) {
+        dispatch(initSate({ ...userData }));
+      } else {
+        const response = getUser();
 
-      response.then((response: any) => {
-        console.log('initialization response:', response);
+        // console.log('initialization:', { data, isError, error, status, isLoading, endpointName, reset, requestId, originalArgs });
+        // console.log('response:', response);
 
-        if ("error" in response) {
-          console.log('response.error:', response.error);
-          if (response.error.status === 401) {
-            dispatch(logout());
+        response.then((response: { data: IUser } | any) => {
+          console.log('initialization response:', response);
+
+          if ("error" in response) {
+            console.log('response.error:', response.error);
+            if (response.error.status === 401) {
+              dispatch(logout());
+            }
           }
-        }
 
-        if ("data" in response) {
-          dispatch(initSate({ ...response.data }));
-        }
-      });
+          if ("data" in response) {
+            dispatch(initSate({ ...response.data }));
+          }
+        });
+      }
     };
 
     const getAppConfig = () => {
-      const response = getRights();
-      const sumRights: IAllRights | any = [];
+      const rights = getLSData(LOCAL_STORAGE_KEYS.rights);
+      // console.log('LS rights:', rights);
+      // console.log('LS typeof rights:', typeof rights);
 
-      response.then((response) => {
-        if ("data" in response) {
-          const configRights = response.data.get;
-          // console.log('getAppConfig:', configRights);
-          // console.log('taskNames:', taskNames);
-          // console.log('buttons:', buttons);
+      if (typeof rights === 'object' && rights !== null) {
+        const arrayRights: IAllRights | any = [];
+        Object.keys(rights).map((key: string) => {
+          // console.log('key:', key);
+          // console.log('rights[key]:', rights[key]);
+          arrayRights[key] = rights[key];
+          return false;
+        });
+        // console.log('arrayRights:', arrayRights);
+        setAllRights(arrayRights);
+      } else {
+        const response = getRights();
+        const sumRights: IAllRights | any = [];
+        
+        response.then((response: IAllRights | any) => {
+          
+          console.log('getAppConfig response:', response);
 
-          configRights.map((task: ITask): IAllRights => {
-            // 1. Удаляем все задачи, прилетевшие с бэка, и которых нет в списке на фронте
-            if (taskNames.indexOf(task.task) !== -1) {
-              const rights: [] = JSON.parse(task.rights);
-              // console.log('> rights: ', rights);
+          if ("data" in response) {
+            const configRights = response.data.get;
+            // console.log('getAppConfig:', configRights);
+            // console.log('taskNames:', taskNames);
+            // console.log('buttons:', buttons);
 
-              let rightsFlat = [""];
-              // 2. Исключаем из списка те задачи с бэка, у которых нет заполненного массива прав
-              if (Array.isArray(rights)) {
-                rightsFlat = rights.reduce(
-                  (acc: string[] | any, right: IRight) => {
-                    return right.users && right.users.length
-                      ? acc.concat(right.users)
-                      : false;
-                  },
-                  []
-                );
+            configRights.map((task: ITask): IAllRights => {
+              // 1. Удаляем все задачи, прилетевшие с бэка, и которых нет в списке на фронте
+              if (taskNames.indexOf(task.task) !== -1) {
+                const rights: [] = JSON.parse(task.rights);
+                // console.log('> rights: ', rights);
 
-                // console.log('> rightsFlat: ', rightsFlat);
-                if (rightsFlat) sumRights[task.task] = rightsFlat;
+                let rightsFlat = [""];
+                // 2. Исключаем из списка те задачи с бэка, у которых нет заполненного массива прав
+                if (Array.isArray(rights)) {
+                  rightsFlat = rights.reduce(
+                    (acc: string[] | any, right: IRight) => {
+                      return right.users && right.users.length
+                        ? acc.concat(right.users)
+                        : false;
+                    },
+                    []
+                  );
+
+                  // console.log('> rightsFlat: ', rightsFlat);
+                  if (rightsFlat) sumRights[task.task] = rightsFlat;
+                }
               }
-            }
-            return sumRights;
-          });
+              return sumRights;
+            });
 
-          // console.log('sumRights >: ', sumRights);
-          setAllRights(sumRights);
-          // console.log('allRights >: ', allRights);
-        }
-      });
+            // console.log('sumRights >: ', sumRights);
+
+            const allRights = { ...sumRights };
+
+            console.log('allRights:', allRights);
+
+            setLSData(LOCAL_STORAGE_KEYS.rights, allRights);
+            setAllRights(sumRights);
+          }
+        });
+      }
     };
 
     initialization();
@@ -147,7 +160,7 @@ export const MainPage = () => {
         )}
         <div className={buttonsContent}>
           <div className={buttonsWrapper}>
-            {isAuth && !isLoading ? (
+            {isAuth && !isLoadingUser && !isLoadingRights ? (
               buttons.length ? (
                 buttons.map(
                   (btn: IHomeButtonProps) =>
@@ -162,8 +175,17 @@ export const MainPage = () => {
               ) : (
                 <div className='text-xl mx-auto'>Нет данных</div>
               )
-            ) : (
+            ) : isLoadingUser && isLoadingRights ? (
               <Loading />
+            ) : (
+              buttons.length && (
+                buttons.map(
+                  (btn) =>
+                    btn.isActive && btn.public && (
+                      <HomeButton key={btn.title} data={btn} />
+                    )
+                )
+              )
             )}
           </div>
         </div>
