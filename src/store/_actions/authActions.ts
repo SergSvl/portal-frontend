@@ -1,7 +1,7 @@
 // import { AppDispatch } from "@/store";
 // import { IUser } from '@/models/IUser';
 // import { fetching, fetchSuccess, fetchError } from '@/store/reducers/userSlice';
-import { apiRequest } from "@/api/api";
+import { apiRequest } from "@/_api/api";
 import { createFormData } from '@/utils/helpers/form-data'
 import { getLSData, setLSData } from '@/utils/helpers/local-storage-helpers';
 import { LOCAL_STORAGE_KEYS } from "@/utils/local-storage-keys";

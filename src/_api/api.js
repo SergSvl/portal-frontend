@@ -16,7 +16,7 @@ class ApiRequest {
 
   createInstance() {
     this.instanceAxios = axios.create({
-      // withCredentials: true, // API неправильно работает с этим флагом, пока отключу
+      withCredentials: true,
       baseURL: this.basePath,
     });
   }

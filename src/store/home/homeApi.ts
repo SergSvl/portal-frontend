@@ -22,9 +22,7 @@ export const homeApi = createApi({
         }
       },
       transformResponse: (response: any) => {
-        setLSData(LOCAL_STORAGE_KEYS.token, response.data.token);
-        setLSData(LOCAL_STORAGE_KEYS.isAuth, true);
-        return response.data;
+        return getResponceData(response);
       }
     }),
 
@@ -47,8 +45,7 @@ export const homeApi = createApi({
         }
       },
       transformResponse: (response: IRightsResponse) => {
-        // console.log('getRights response.data:', response.data);
-        return response.data;
+        return getResponceData(response);
       }
     }),
 
@@ -93,5 +90,17 @@ export const homeApi = createApi({
     }),
   })
 });
+
+const getResponceData = (response: any) => {
+  console.log('getResponceData:', response);
+  
+  if (response.status) {
+    setLSData(LOCAL_STORAGE_KEYS.token, response.data.token);
+    setLSData(LOCAL_STORAGE_KEYS.isAuth, true);
+    return response.data;
+  } else {
+    throw new Error(response.error);
+  }
+}
 
 export const { useLoginMutation, useGetRightsMutation, useGetUserMutation } = homeApi;

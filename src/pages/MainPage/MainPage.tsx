@@ -50,7 +50,7 @@ export const MainPage = () => {
   useEffect(() => {
     const initialization = async () => {
       const userData = getLSData(LOCAL_STORAGE_KEYS.user);
-      // console.log('initialization userData:', userData);
+      console.log('initialization userData:', userData);
 
       if (typeof userData === 'object' && userData !== null) {
         dispatch(initSate({ ...userData }));

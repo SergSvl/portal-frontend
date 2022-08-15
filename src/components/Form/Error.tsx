@@ -7,13 +7,17 @@ import Button from "@/components/Button/Button";
 const Error = ({ error }: IApiError) => {
   const dispatch = useAppDispatch();
   const [errorMessageDetailed, setErrorMessageDetailed] = useState("");
-  const errorMessage = "Ошибка связи с сервером";
+  const errorMessage = "Ошибка";
   const buttonStyle = "mx-auto m-4 w-32";
 
   useEffect(() => {
     const getError = () => {
+      console.log('error:', error);
+
       if (error !== undefined && "error" in error) {
         setErrorMessageDetailed(error.error);
+      } else {
+        setErrorMessageDetailed(error.message);
       }
     };
     getError();
