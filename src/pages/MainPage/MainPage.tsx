@@ -70,7 +70,7 @@ export const MainPage = () => {
             }
           }
 
-          if ("data" in response) {
+          if ("data" in response && response.data !== undefined) {
             dispatch(initSate({ ...response.data }));
           }
         });
@@ -110,7 +110,7 @@ export const MainPage = () => {
               // 1. Удаляем все задачи, прилетевшие с бэка, и которых нет в списке на фронте
               if (taskNames.indexOf(task.task) !== -1) {
                 const rights: [] = JSON.parse(task.rights);
-                // console.log('> rights: ', rights);
+                // console.log(`Задача: ${task.task} ее rights:`, rights);
 
                 let rightsFlat = [""];
                 // 2. Исключаем из списка те задачи с бэка, у которых нет заполненного массива прав
@@ -119,7 +119,7 @@ export const MainPage = () => {
                     (acc: string[] | any, right: IRight) => {
                       return right.users && right.users.length
                         ? acc.concat(right.users)
-                        : false;
+                        : acc;
                     },
                     []
                   );

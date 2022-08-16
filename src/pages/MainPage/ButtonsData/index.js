@@ -8,7 +8,7 @@ import btk from "@/assets/img/btk.jpg";
 import smk from "@/assets/img/smk.jpg";
 import worders from "@/assets/img/worders.jpg";
 import tools from "@/assets/img/tools.jpg";
-// import osolutions from "@/assets/img/osolutions.jpg";
+import osolutions from "@/assets/img/osolutions.jpg";
 
 /**
  * Список кнопок задач на главной портала.
@@ -55,6 +55,16 @@ const buttonsData = [
     link: "",
     get: "",
     post: `${process.env.REACT_APP_TABEL_URL}${"/login/in"}`,
+    isActive: true,
+    public: false
+  },
+  {
+    id: "tabel",
+    title: "Персонал тестовый",
+    image: tabel,
+    link: "",
+    get: "",
+    post: `${process.env.REACT_APP_TEST_TABEL_URL}${"/login/in"}`,
     isActive: true,
     public: false
   },
@@ -138,16 +148,16 @@ const buttonsData = [
     isActive: true,
     public: false
   },
-  // {
-  //   id: "osolutions",
-  //   title: "Оперативные решения",
-  //   image: osolutions,
-  //   link: "#",
-  //   get: "",
-  //   post: "",
-  //   isActive: false,
-  //   public: false
-  // }
+  {
+    id: "osolutions",
+    title: "Оперативные решения",
+    image: osolutions,
+    link: "#",
+    get: "",
+    post: "",
+    isActive: false,
+    public: false
+  }
 ];
 
 export const taskNames = buttonsData.map((task) => task.id);
