@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import LoginForm from "@/components/Form/Login";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { closeLoginForm, initSate } from "@/store/home/homeSlice";
@@ -150,46 +148,42 @@ export const MainPage = () => {
 
   return (
     <>
-      <Header />
-      <div className=''>
-        {isOpenLoginForm && (
-          <>
-            <div className={overlay} onClick={handlerOuterFormClick}></div>
-            <LoginForm />
-          </>
-        )}
-        <div className={buttonsContent}>
-          <div className={buttonsWrapper}>
-            {isAuth && !isLoadingUser && !isLoadingRights ? (
-              buttons.length ? (
-                buttons.map(
-                  (btn: IHomeButtonProps) =>
-                    btn.isActive &&
-                    (btn.public 
-                      || (allRights[btn.id as unknown as number] !== undefined
-                      && allRights[btn.id as unknown as number].indexOf(email) !== -1)
-                    ) && (
-                      <HomeButton key={btn.title} data={btn} />
-                    )
-                )
-              ) : (
-                <div className='text-xl mx-auto'>Нет данных</div>
+      {isOpenLoginForm && (
+        <>
+          <div className={overlay} onClick={handlerOuterFormClick}></div>
+          <LoginForm />
+        </>
+      )}
+      <div className={buttonsContent}>
+        <div className={buttonsWrapper}>
+          {isAuth && !isLoadingUser && !isLoadingRights ? (
+            buttons.length ? (
+              buttons.map(
+                (btn: IHomeButtonProps) =>
+                  btn.isActive &&
+                  (btn.public 
+                    || (allRights[btn.id as unknown as number] !== undefined
+                    && allRights[btn.id as unknown as number].indexOf(email) !== -1)
+                  ) && (
+                    <HomeButton key={btn.title} data={btn} />
+                  )
               )
-            ) : isLoadingUser && isLoadingRights ? (
-              <Loading />
             ) : (
-              buttons.length && (
-                buttons.map(
-                  (btn) =>
-                    btn.isActive && btn.public && (
-                      <HomeButton key={btn.title} data={btn} />
-                    )
-                )
+              <div className='text-xl mx-auto'>Нет данных</div>
+            )
+          ) : isLoadingUser && isLoadingRights ? (
+            <Loading />
+          ) : (
+            buttons.length && (
+              buttons.map(
+                (btn) =>
+                  btn.isActive && btn.public && (
+                    <HomeButton key={btn.title} data={btn} />
+                  )
               )
-            )}
-          </div>
+            )
+          )}
         </div>
-        <Footer />
       </div>
     </>
   );
